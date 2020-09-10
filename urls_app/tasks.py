@@ -36,8 +36,6 @@ def check_url_task():
         )
         url_list = [url.text for url in urls]
 
-        # url_list = ['https://vk.com/', 'https://www.django-rest-framework.org/', 'https://docs.djangoproject.com/']
-
         response_list = []
         asyncio.run(bulk_request(urls=url_list, responses=response_list))
         print(response_list)
@@ -52,7 +50,3 @@ def check_url_task():
 
     except Exception as e:
         print(e)
-
-
-# check_url_task()
-
