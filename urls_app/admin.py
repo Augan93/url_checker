@@ -7,5 +7,7 @@ from . import models
 class UrlAdmin(admin.ModelAdmin):
     list_display = (
         'text',
+        'is_paused',
+        'status',
     )
 

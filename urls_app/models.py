@@ -14,4 +14,10 @@ class Url(models.Model):
     is_active = models.BooleanField(
         default=True,
     )
-
+    is_paused = models.BooleanField(
+        default=False,
+    )
+    status = models.IntegerField(
+        null=True,
+        blank=True,
+    )

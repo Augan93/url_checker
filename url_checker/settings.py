@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'urls_app',
     'bootstrap4',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +126,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/static/',
 ]
+
+CELERY_BROKER_URL = 'amqp://augan:augan@localhost:5672/myvhost'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'

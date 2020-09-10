@@ -22,17 +22,51 @@
             </thead>
             <tbody>
             {% for url in urls %}
-                <tr class="table-success">
+                <tr id="{{ url.id }}" class="{% if url.status == 200 %}table-success{% else %}table-danger{% endif %}">
                     <th scope="row">{{ forloop.counter }}</th>
                     <td>{{ url.text }}</td>
-                    <td>200</td>
-                    <td><button data-val="{{ url.id }}" class="btn btn-primary">Pause</button></td>
+                    <td>{{ url.status }}</td>
+                    <td>
+                        <button data-val="{{ url.id }}" class="btn btn-primary">{% if url.is_paused %}Resume{% else %}
+                            Pause{% endif %}</button>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
     <script>
+        window.get_url_status = '{% url "urls:get_url_status" %}';
+        var interval = 3000;
+
+        $(document).ready(function () {
+
+
+            var ajax_call = function () {
+                $.ajax({
+                    type: 'GET',
+                    url: window.get_url_status,
+                    success: function (data) {
+                        $.each(data['urls'], function (key, value) {
+                            var row = $('tr#' + value.id);
+
+                            if (value.status === 200) {
+                                row.addClass('table-success');
+                                row.removeClass('table-danger');
+                            } else {
+                                row.removeClass('table-success');
+                                row.addClass('table-danger');
+                            }
+                            row.find('td:nth-child(3)').text(value.status);
+
+                            console.log('status: ' + value.status + ' | id: ' + value.id);
+                        });
+                    }
+                })
+            };
+
+            setInterval(ajax_call, interval);
+        });
 
     </script>
 {% endblock %}
