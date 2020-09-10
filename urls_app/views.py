@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-import aiohttp
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from datetime import datetime
 from django.http import JsonResponse
