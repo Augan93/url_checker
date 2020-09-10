@@ -1,5 +1,7 @@
 "# url_checker" 
+
 Go to http://127.0.0.1:8000/urls/
+
 Admin: http://127.0.0.1:8000/admin/
 
 URLs are checked periodically with given interval via Celery.
