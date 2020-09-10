@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}URL list{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h3>Urls</h3>
+        <div class="mb-5">
+            <form action="">
+                <input type="number" name="interval">
+                <button class="btn btn-primary">Set Interval</button>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">URL</th>
+                <th scope="col">Status Code</th>
+                <th scope="col">Pause</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for url in urls %}
+                <tr class="table-success">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ url.text }}</td>
+                    <td>200</td>
+                    <td><button data-val="{{ url.id }}" class="btn btn-primary">Pause</button></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+
+    </script>
+{% endblock %}
