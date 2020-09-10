@@ -13,4 +13,8 @@ urlpatterns = [
     path('get_url_status/',
          views.get_url_status,
          name='get_url_status'),
+
+    path('pause/',
+         views.pause,
+         name='pause'),
 ]

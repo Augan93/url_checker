@@ -4,11 +4,12 @@
 
 {% block content %}
     <div class="container mt-5">
-        <h3>Urls</h3>
+        <h1 class="mb-5 text-center">Url  Checker</h1>
         <div class="mb-5">
-            <form action="">
-                <input type="number" name="interval">
-                <button class="btn btn-primary">Set Interval</button>
+            <form action="" id="interval-form">
+                {% csrf_token %}
+                <input type="number" id="interval" name="interval" placeholder="Interval... (in seconds)">
+                <button type="submit" class="btn btn-primary">Set Interval</button>
             </form>
         </div>
         <table class="table">
@@ -25,10 +26,15 @@
                 <tr id="{{ url.id }}" class="{% if url.status == 200 %}table-success{% else %}table-danger{% endif %}">
                     <th scope="row">{{ forloop.counter }}</th>
                     <td>{{ url.text }}</td>
-                    <td>{{ url.status }}</td>
+                    <td>{{ url.status|default:'-' }}</td>
                     <td>
-                        <button data-val="{{ url.id }}" class="btn btn-primary">{% if url.is_paused %}Resume{% else %}
-                            Pause{% endif %}</button>
+                        <button data-val="{{ url.id }}" class="pause btn btn-primary">
+                            <span>
+                                {% if url.is_paused %}
+                                    Resume{% else %}
+                                    Pause{% endif %}
+                            </span>
+                        </button>
                     </td>
                 </tr>
             {% endfor %}
@@ -37,7 +43,10 @@
     </div>
     <script>
         window.get_url_status = '{% url "urls:get_url_status" %}';
-        var interval = 3000;
+        window.pause_url = '{% url "urls:pause" %}';
+        window.set_interval_url = '{% url "urls:set_interval" %}';
+
+        var interval = 3; // seconds
 
         $(document).ready(function () {
 
@@ -65,7 +74,56 @@
                 })
             };
 
-            setInterval(ajax_call, interval);
+            var intervalObj = setInterval(ajax_call, interval * 1000);
+
+            $('.pause').on('click', function (event) {
+                event.preventDefault();
+
+                var urlId = $(this).attr('data-val');
+                console.log(urlId);
+
+                $.ajax({
+                    type: 'GET',
+                    url: window.pause_url,
+                    data: {
+                        'id': urlId,
+                    },
+                    success: function (data) {
+                        if (data['status'] === 'ok') {
+                            if (data['is_paused']) {
+                                event.target.innerText = 'Resume';
+                            } else {
+                                event.target.innerText = 'Pause';
+                            }
+                        }
+
+                    }
+                })
+            });
+
+            $('#interval-form').on('submit', function (event) {
+                event.preventDefault();
+
+                var intervalVal = $('#interval').val();
+
+                clearInterval(intervalObj);
+                intervalObj = setInterval(ajax_call, parseFloat(intervalVal) * 1000);
+
+                $.ajax({
+                    type: 'POST',
+                    url: window.set_interval_url,
+                    data: {
+                        "csrfmiddlewaretoken": $('#interval-form input[name="csrfmiddlewaretoken"]').val(),
+                        "interval": intervalVal,
+                    },
+                    success: function (data) {
+                        if (data['status'] === 'ok') {
+                           alert('Interval set:' + intervalVal + 'sec');
+                        }
+                    }
+                })
+            });
+
         });
 
     </script>

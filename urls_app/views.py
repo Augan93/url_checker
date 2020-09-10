@@ -32,8 +32,13 @@ def set_interval(request):
         )
 
         name = 'URL_CHECKER'
-        if not PeriodicTask.objects.filter(name=name).exists():
-            PeriodicTask.objects.get_or_create(
+        try:
+            task = PeriodicTask.objects.get(name=name)
+            task.interval = interval
+            task.save()
+
+        except PeriodicTask.DoesNotExist:
+            PeriodicTask.objects.create(
                 interval=interval,
                 name=name,
                 task='urls_app.tasks.check_url_task',
@@ -48,18 +53,39 @@ def set_interval(request):
 
 @login_required
 def pause(request):
-    pass
+    url_id = request.GET.get('id')
+    try:
+        url = models.Url.objects.get(pk=url_id)
+        url.is_paused = not url.is_paused
+        url.save()
+        return JsonResponse(
+            {
+                'status': 'ok',
+                'is_paused': url.is_paused,
+            },
+        )
+
+    except models.Url.DoesNotExist:
+        return JsonResponse(
+            {
+                'status': 'not_found',
+            },
+            status=404,
+        )
 
 
 @login_required
 def get_url_status(request):
-    urls = models.Url.objects.filter(is_active=True)
+    urls = models.Url.objects.filter(
+        is_active=True,
+        is_paused=False,
+    )
     url_list = []
     for url in urls:
         url_list.append(
             {
                 'id': url.id,
-                'status': url.status,
+                'status': url.status or '-',
             }
         )
 

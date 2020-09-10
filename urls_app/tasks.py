@@ -16,7 +16,7 @@ async def make_request(url: str, session: ClientSession, responses: list) -> Non
     responses.append(resp_dict)
 
 
-async def bulk_request_and_write(urls: list, responses: list) -> None:
+async def bulk_request(urls: list, responses: list) -> None:
     """Make requests concurrently"""
     async with ClientSession() as session:
         tasks = []
@@ -39,7 +39,7 @@ def check_url_task():
         # url_list = ['https://vk.com/', 'https://www.django-rest-framework.org/', 'https://docs.djangoproject.com/']
 
         response_list = []
-        asyncio.run(bulk_request_and_write(urls=url_list, responses=response_list))
+        asyncio.run(bulk_request(urls=url_list, responses=response_list))
         print(response_list)
 
         for resp in response_list:
